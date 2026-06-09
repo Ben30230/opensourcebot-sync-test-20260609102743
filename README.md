@@ -1,5 +1,25 @@
-# OpenSourceBot Sync Test
+# OpenSourceBot Keyword Scout
 
-Initial baseline content.
+OpenSourceBot Keyword Scout is a small Python CLI for extracting frequent keywords
+from short text snippets. It is intentionally dependency-free and uses only the
+Python standard library.
 
-Second sync change at 2026-06-09T02:31:03Z.
+## Usage
+
+```bash
+python3 src/keyword_scout.py "Scout feedback scout, and bots." --limit 2
+```
+
+Example output:
+
+```json
+[{"keyword": "scout", "count": 2}, {"keyword": "feedback", "count": 1}]
+```
+
+## Development
+
+Run the test suite with:
+
+```bash
+python3 -m unittest discover -s tests
+```

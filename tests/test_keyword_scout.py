@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 sys.path.insert(0, str(SRC))
 
-from keyword_scout import count_keywords, normalize, score_keywords, tokenize
+from keyword_scout import count_keywords, keyword_density, normalize, score_keywords, tokenize
 
 
 class KeywordScoutTest(unittest.TestCase):
@@ -22,6 +22,17 @@ class KeywordScoutTest(unittest.TestCase):
     def test_count_keywords_returns_top_n_frequency_pairs(self):
         text = "Scout scout feedback bots feedback scout the and bots."
         self.assertEqual(count_keywords(text, limit=2), [("scout", 3), ("feedback", 2)])
+
+    def test_keyword_density_returns_keyword_share(self):
+        text = "Scout scout feedback bots feedback scout."
+
+        density = keyword_density(text, limit=2)
+
+        self.assertEqual(density[0]["keyword"], "scout")
+        self.assertEqual(density[0]["count"], 3)
+        self.assertAlmostEqual(density[0]["share"], 0.5)
+        self.assertEqual(density[1]["keyword"], "feedback")
+        self.assertAlmostEqual(density[1]["share"], 1 / 3)
 
     def test_score_keywords_includes_repeated_phrases(self):
         text = "Open source feedback helps open source maintainers prioritize feedback."

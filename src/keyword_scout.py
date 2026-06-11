@@ -43,6 +43,22 @@ def count_keywords(text: str, limit: int = 10) -> list[tuple[str, int]]:
     return Counter(tokenize(text)).most_common(limit)
 
 
+def keyword_density(text: str, limit: int = 10) -> list[dict[str, float | int | str]]:
+    """Return top keywords with their share of all non-stop-word tokens."""
+    tokens = tokenize(text)
+    total = len(tokens)
+    if total == 0:
+        return []
+    return [
+        {
+            "keyword": keyword,
+            "count": count,
+            "share": count / total,
+        }
+        for keyword, count in Counter(tokens).most_common(limit)
+    ]
+
+
 def score_keywords(text: str, limit: int = 10) -> list[dict[str, float | int | str]]:
     """Return scored keywords and adjacent two-word phrases."""
     tokens = tokenize(text)

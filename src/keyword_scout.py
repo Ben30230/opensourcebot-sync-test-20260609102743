@@ -43,19 +43,52 @@ def count_keywords(text: str, limit: int = 10) -> list[tuple[str, int]]:
     return Counter(tokenize(text)).most_common(limit)
 
 
+def score_keywords(text: str, limit: int = 10) -> list[dict[str, float | int | str]]:
+    """Return scored keywords and adjacent two-word phrases."""
+    tokens = tokenize(text)
+    singles = Counter(tokens)
+    phrases = Counter(" ".join(pair) for pair in zip(tokens, tokens[1:]))
+    scores: dict[str, dict[str, float | int | str]] = {}
+
+    for keyword, count in singles.items():
+        scores[keyword] = {
+            "keyword": keyword,
+            "count": count,
+            "score": float(count * (1 + min(len(keyword), 12) / 12)),
+        }
+
+    for phrase, count in phrases.items():
+        if count < 2:
+            continue
+        scores[phrase] = {
+            "keyword": phrase,
+            "count": count,
+            "score": float(count * 3),
+        }
+
+    return sorted(
+        scores.values(),
+        key=lambda row: (-float(row["score"]), str(row["keyword"])),
+    )[:limit]
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Extract top keyword frequencies from text.")
     parser.add_argument("text", help="Text to analyze.")
     parser.add_argument("--limit", type=int, default=10, help="Maximum keywords to return.")
+    parser.add_argument("--scored", action="store_true", help="Return weighted keyword and phrase scores.")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    rows = [
-        {"keyword": keyword, "count": count}
-        for keyword, count in count_keywords(args.text, args.limit)
-    ]
+    if args.scored:
+        rows = score_keywords(args.text, args.limit)
+    else:
+        rows = [
+            {"keyword": keyword, "count": count}
+            for keyword, count in count_keywords(args.text, args.limit)
+        ]
     print(json.dumps(rows, ensure_ascii=False))
     return 0
 

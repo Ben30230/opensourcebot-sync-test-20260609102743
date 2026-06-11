@@ -4,6 +4,9 @@ OpenSourceBot Keyword Scout is a small Python CLI for extracting frequent keywor
 from short text snippets. It is intentionally dependency-free and uses only the
 Python standard library.
 
+The scorer can now surface repeated two-word phrases, using frequency and phrase
+length to rank higher-signal terms ahead of one-off keywords.
+
 ## Usage
 
 ```bash
@@ -14,6 +17,12 @@ Example output:
 
 ```json
 [{"keyword": "scout", "count": 2}, {"keyword": "feedback", "count": 1}]
+```
+
+Weighted phrase scoring:
+
+```bash
+python3 src/keyword_scout.py "Open source feedback helps open source maintainers." --scored --limit 1
 ```
 
 ## Development
